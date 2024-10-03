@@ -34,12 +34,12 @@ namespace MainConsoleApp
                             break;
                         if (item.GetAttribute("class").Contains("reversed"))
                         {
-                            timeLocationString = "```" + item.Text + "```\n";
+                            timeLocationString = "`" + item.Text + "`\n";
                             break;
                         }
                         if (item.GetAttribute("class").Contains("bold"))
                         {
-                            str += "\\*" + item.Text + "*";
+                            str += "*" + item.Text + "*";
                             break;
                         }
                         str += item.Text;

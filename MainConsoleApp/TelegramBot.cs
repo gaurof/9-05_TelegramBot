@@ -27,6 +27,7 @@ public class TelegramBot
         if (update.Message.Text == "/start")
         {
             currentUser.RestartGame();
+            currentUser.SendMessage(currentUser.CurrentGame.GetText());
             return;
         }
 
