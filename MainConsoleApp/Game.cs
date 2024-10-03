@@ -23,6 +23,7 @@ namespace MainConsoleApp
         public string GetText()
         {
             string str = "";
+            string timeLocationString = ""; 
             var textBox = firefoxDriver.FindElements(By.CssSelector("span, br"));
             foreach (var item in textBox)
             {
@@ -31,8 +32,16 @@ namespace MainConsoleApp
                     case "span":
                         if (item.GetAttribute("class").Contains("z-breaking-whitespace") || item.GetAttribute("class").Contains("finished-input"))
                             break;
-                        if (item.GetAttribute("class").Contains("bold"))
+                        if (item.GetAttribute("class").Contains("reversed"))
+                        {
+                            timeLocationString = "```" + item.Text + "```\n";
                             break;
+                        }
+                        if (item.GetAttribute("class").Contains("bold"))
+                        {
+                            str += "\\*" + item.Text + "*";
+                            break;
+                        }
                         str += item.Text;
                             break;
                     case "br":
@@ -41,7 +50,7 @@ namespace MainConsoleApp
                 }
             }
             var tempLastMessageLength = str.Length;
-            str = str[lastMessageLength..];
+            str = timeLocationString + str[lastMessageLength..];
             lastMessageLength = tempLastMessageLength;
             Console.WriteLine(str);
             return str;
