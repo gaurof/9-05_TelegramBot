@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.DevTools.V127.CSS;
 using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,7 @@ namespace MainConsoleApp
 
         public Game()
         {
-            firefoxDriver = new FirefoxDriver();
-            firefoxDriver.Navigate().GoToUrl("https://adamcadre.ac/if/905.html");
-            firefoxDriver.Manage().Timeouts().ImplicitWait = TimeSpan.FromMilliseconds(1000);
+            Start();
         }
         public string GetText()
         {
@@ -70,8 +69,31 @@ namespace MainConsoleApp
         }
         public void Restart()
         {
-            Stop();
+            if (firefoxDriver == null )
+                Start();
+            firefoxDriver!.Navigate().RefreshAsync();
+        }
+        public void Start()
+        {
             firefoxDriver = new FirefoxDriver();
+            firefoxDriver.Navigate().GoToUrl("https://adamcadre.ac/if/905.html");
+
+            WebDriverWait wait = new WebDriverWait(firefoxDriver, TimeSpan.FromSeconds(5))
+            {
+                PollingInterval = TimeSpan.FromMilliseconds(300),
+            };
+            wait.Until(a =>
+            {
+                try
+                {
+                    firefoxDriver.FindElement(By.CssSelector("input"));
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            });
         }
     }
 }

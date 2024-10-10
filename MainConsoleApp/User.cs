@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium.Firefox;
+﻿using OpenQA.Selenium.DevTools.V128.PWA;
+using OpenQA.Selenium.Firefox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,16 +17,16 @@ public class User
     public string Username { get; private set; }
     public string LastName { get; private set; }
     public List<string> Messages { get; set; }
-    public Game CurrentGame { get; private set ; }
+    public Game? CurrentGame { get; private set ; }
     public User(long ID, string username, string lastName)
     {
         Id = ID;
         Username = username;
         LastName = lastName;
         Messages = new List<string>();
-        RestartGame();
+        CurrentGame = new();
     }
-    public void SendMessage(string message)
+    public void SendGameMessage(string message)
     {
         var charactersToChange = new[] { '_', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' };
         foreach (var character in charactersToChange)
@@ -35,12 +36,6 @@ public class User
         message = message.Replace("  ", " ");
         TelegramBot.Client.SendTextMessageAsync(Id, message, parseMode: ParseMode.MarkdownV2);
     }
-    public void RestartGame()
-    {
-        if (CurrentGame != null)
-            CurrentGame.Stop();
-        CurrentGame = new Game();
-    }
 
-
+    public void SendMessage(string message) => TelegramBot.Client.SendTextMessageAsync(Id, message);
 }

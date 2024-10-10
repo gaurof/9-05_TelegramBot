@@ -2,16 +2,16 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Translate" Version="3.7.400.28" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Selenium.WebDriver" Version="4.25.0" />
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
+    <PackageReference Include="XLocalizer.Translate.MyMemoryTranslate" Version="1.0.1" />
   </ItemGroup>
 
 </Project>

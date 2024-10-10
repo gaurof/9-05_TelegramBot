@@ -4,7 +4,7 @@ namespace MainConsoleApp;
 
 static internal class Storage
 {
-    public static List<User> Users = new();
+    public static List<User>? Users = new();
 
     public static void SaveData()
     {
@@ -20,7 +20,7 @@ static internal class Storage
     }
     public static bool IsUserNew(long userID)
     {
-        if (Users == null)
+        if (Users == null || Users.Count == 0)
             return true;
         if (Users.Count != 0)
         {
@@ -34,7 +34,7 @@ static internal class Storage
         }
         return true;
     }
-    public static User GetUserByID(long userID)
+    public static User? GetUserByID(long userID)
     {
         foreach (var user in Users)
         {
