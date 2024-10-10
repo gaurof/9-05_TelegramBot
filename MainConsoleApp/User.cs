@@ -34,6 +34,7 @@ public class User
             message = message.Replace(character.ToString(), $@"\{character}");
         }
         message = message.Replace("  ", " ");
+        message = message.Remove(message.Length - 2);
         TelegramBot.Client.SendTextMessageAsync(Id, message, parseMode: ParseMode.MarkdownV2);
     }
 

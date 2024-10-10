@@ -19,9 +19,9 @@ namespace MainConsoleApp
         {
             Start();
         }
-        public string GetText()
+        public string GetText(bool wasCommandEnteredBefore)
         {
-            string str = "";
+            string pageString = "";
             string timeLocationString = ""; 
             var textBox = firefoxDriver.FindElements(By.CssSelector("span, br"));
             foreach (var item in textBox)
@@ -29,33 +29,41 @@ namespace MainConsoleApp
                 switch (item.TagName)
                 {
                     case "span":
-                        if (item.GetAttribute("class").Contains("z-breaking-whitespace") || item.GetAttribute("class").Contains("finished-input"))
+                        var itemClassName = item.GetAttribute("class");
+                        if (itemClassName.Contains("z-breaking-whitespace") || itemClassName.Contains("finished-input"))
                             break;
-                        if (item.GetAttribute("class").Contains("reversed"))
+                        if (itemClassName.Contains("reversed"))
                         {
                             timeLocationString = "`" + item.Text + "`\n";
                             break;
                         }
-                        if (item.GetAttribute("class").Contains("bold"))
+                        if (itemClassName.Contains("bold"))
                         {
-                            str += "*" + item.Text + "*";
+                            pageString += "*" + item.Text + "*";
                             break;
                         }
-                        str += item.Text;
+                        pageString += item.Text;
                             break;
                     case "br":
-                        str += "\n";
+                        pageString += "\n";
                         break;
                 }
             }
-            var tempLastMessageLength = str.Length;
-            str = timeLocationString + str[lastMessageLength..];
+            var tempLastMessageLength = pageString.Length;
+            pageString = pageString[lastMessageLength..];
+            if (wasCommandEnteredBefore)
+            {
+                pageString = RemoveUserMessage(pageString);
+            }
+            pageString = timeLocationString + pageString;
             lastMessageLength = tempLastMessageLength;
-            Console.WriteLine(str);
-            return str;
+            Console.WriteLine(pageString);
+            return pageString;
         }
         public void EnterCommand(string command)
         {
+            Wait();
+
             var input = firefoxDriver.FindElement(By.CssSelector("input"));
 
             input.Click();
@@ -78,6 +86,25 @@ namespace MainConsoleApp
             firefoxDriver = new FirefoxDriver();
             firefoxDriver.Navigate().GoToUrl("https://adamcadre.ac/if/905.html");
 
+            Wait();
+        }
+
+        private string RemoveUserMessage(string input)
+        {
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (input[i] == '\n')
+                {
+                    Console.WriteLine(input);
+                    Console.WriteLine(input.Remove(0, i));
+                    return input.Remove(0, i);
+                }
+            }
+
+            return input;
+        }
+        private void Wait()
+        {
             WebDriverWait wait = new WebDriverWait(firefoxDriver, TimeSpan.FromSeconds(5))
             {
                 PollingInterval = TimeSpan.FromMilliseconds(300),

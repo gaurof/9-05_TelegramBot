@@ -25,16 +25,15 @@ public class TelegramBot
         if (update.Message.Text == "/start")
         {
             currentUser.CurrentGame.Restart();
-            currentUser.SendGameMessage(currentUser.CurrentGame.GetText());
             return Task.CompletedTask;
         }
         if (currentUser.CurrentGame == null)
         {
             currentUser.CurrentGame.Restart();
-            currentUser.SendGameMessage(currentUser.CurrentGame.GetText());
+            currentUser.SendGameMessage(currentUser.CurrentGame.GetText(false));
         }
         currentUser.CurrentGame.EnterCommand(update.Message.Text);
-        currentUser.SendGameMessage(currentUser.CurrentGame.GetText());
+        currentUser.SendGameMessage(currentUser.CurrentGame.GetText(true));
 
         return Task.CompletedTask;
     }
