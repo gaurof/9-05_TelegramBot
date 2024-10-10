@@ -11,14 +11,13 @@ public class TelegramBot
     {
         if (update.Message!.Text == null)
             return Task.CompletedTask;
-        User currentUser;
-        if (Storage.IsUserNew(update.Message.From.Id))
+
+        User currentUser = Storage.GetUserByID(update.Message.From.Id);
+        if (currentUser == null)
         {
             currentUser = new User(update.Message.From.Id, update.Message.From.Username, update.Message.From.LastName);
             Storage.Users.Add(currentUser);
         }
-        else
-            currentUser = Storage.GetUserByID(update.Message.From.Id);
 
         Console.WriteLine($"{currentUser.LastName} ({currentUser.Username}): {update.Message.Text}");
 

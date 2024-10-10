@@ -18,22 +18,6 @@ static internal class Storage
             Users = JsonConvert.DeserializeObject<List<User>>(File.ReadAllText("users.json"));
         }
     }
-    public static bool IsUserNew(long userID)
-    {
-        if (Users == null || Users.Count == 0)
-            return true;
-        if (Users.Count != 0)
-        {
-            foreach (var user in Users)
-            {
-                if (user.Id == userID)
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
     public static User? GetUserByID(long userID)
     {
         foreach (var user in Users)

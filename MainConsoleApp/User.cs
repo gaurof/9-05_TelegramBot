@@ -17,7 +17,7 @@ public class User
     public string Username { get; private set; }
     public string LastName { get; private set; }
     public List<string> Messages { get; set; }
-    public Game? CurrentGame { get; private set ; }
+    public Game CurrentGame { get; private set ; }
     public User(long ID, string username, string lastName)
     {
         Id = ID;
@@ -26,8 +26,9 @@ public class User
         Messages = new List<string>();
         CurrentGame = new();
     }
-    public void SendGameMessage(string message)
+    public async void SendGameMessage(string message)
     {
+        message = Translator.Translate(message, "en", "ru");
         var charactersToChange = new[] { '_', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' };
         foreach (var character in charactersToChange)
         {
