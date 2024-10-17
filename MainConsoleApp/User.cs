@@ -28,7 +28,7 @@ public class User
     }
     public async void SendGameMessage(string message)
     {
-        message = Translator.Translate(message, "en", "ru");
+        //message = Translator.Translate(message, "en", "ru");
         var charactersToChange = new[] { '_', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' };
         foreach (var character in charactersToChange)
         {
