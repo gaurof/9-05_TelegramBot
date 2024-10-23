@@ -1,4 +1,5 @@
-﻿using Telegram.Bot;
+﻿using OpenQA.Selenium.DevTools.V128.PWA;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace MainConsoleApp;
@@ -7,34 +8,37 @@ public class TelegramBot
 {
     public static TelegramBotClient Client = new("7684584581:AAH3GSHb5Vray3dv6pPl6Qtp4CyCsw3VDvI");
 
-    public static Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    public static async Task HandleUpdateAsync(ITelegramBotClient client, Update update, CancellationToken cancellationToken)
     {
-        if (update.Message!.Text == null)
-            return Task.CompletedTask;
+        //Dealing with a new user
+        User? currentUser = Storage.GetUserByID(update.Message!.From!.Id);
 
-        User currentUser = Storage.GetUserByID(update.Message.From.Id);
-        if (currentUser == null)
+        if (currentUser is null)
         {
-            currentUser = new User(update.Message.From.Id, update.Message.From.Username, update.Message.From.LastName);
-            Storage.Users.Add(currentUser);
+            currentUser = new User(update.Message.From.Id, update.Message.From.Username!, update.Message.From.LastName!);
+            Storage.Users?.Add(currentUser);
         }
-
         Console.WriteLine($"{currentUser.LastName} ({currentUser.Username}): {update.Message.Text}");
 
-        if (update.Message.Text == "/start")
-        {
-            currentUser.CurrentGame.Restart();
-            return Task.CompletedTask;
-        }
-        if (currentUser.CurrentGame == null)
-        {
-            currentUser.CurrentGame.Restart();
-            currentUser.SendGameMessage(currentUser.CurrentGame.GetText(false));
-        }
-        currentUser.CurrentGame.EnterCommand(update.Message.Text);
-        currentUser.SendGameMessage(currentUser.CurrentGame.GetText(true));
 
-        return Task.CompletedTask;
+
+        if (update.Message.Text is not null)
+        {
+            currentUser.Messages?.Add(update.Message.Text);
+
+            if (update.Message.Text == "/start")
+            {
+                await currentUser.CurrentGame.StartAsync();
+                await currentUser.SendGameMessageAsync(currentUser.CurrentGame.GetText(false));
+                return;
+            }
+            if (currentUser.CurrentGame is not null)
+            {
+                await currentUser.CurrentGame.EnterCommandAsync(update.Message.Text!);
+                await currentUser.SendGameMessageAsync(currentUser.CurrentGame!.GetText(true));
+            }
+        }
+        return;
     }
     public static Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
@@ -43,6 +47,9 @@ public class TelegramBot
     }
     public static void Start()
     {
-        Client?.StartReceiving(updateHandler: HandleUpdateAsync, pollingErrorHandler: HandlePollingErrorAsync);
+        Client?.StartReceiving(
+            updateHandler: HandleUpdateAsync, 
+            pollingErrorHandler: HandlePollingErrorAsync
+            );
     }
 }

@@ -2,7 +2,7 @@
 
 namespace MainConsoleApp;
 
-static internal class Storage
+static class Storage
 {
     public static List<User>? Users = new();
 
@@ -20,7 +20,10 @@ static internal class Storage
     }
     public static User? GetUserByID(long userID)
     {
-        foreach (var user in Users)
+        if(Users?.Count == 0)
+            return null;
+
+        foreach (var user in Users!)
         {
             if (user.Id == userID)
             {

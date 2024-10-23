@@ -26,9 +26,8 @@ public class User
         Messages = new List<string>();
         CurrentGame = new();
     }
-    public async void SendGameMessage(string message)
+    public async Task SendGameMessageAsync(string message)
     {
-        //message = Translator.Translate(message, "en", "ru");
         var charactersToChange = new[] { '_', '[', ']', '(', ')', '~', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!' };
         foreach (var character in charactersToChange)
         {
@@ -36,7 +35,7 @@ public class User
         }
         message = message.Replace("  ", " ");
         message = message.Remove(message.Length - 2);
-        TelegramBot.Client.SendTextMessageAsync(Id, message, parseMode: ParseMode.MarkdownV2);
+        await TelegramBot.Client.SendTextMessageAsync( Id, message, parseMode: ParseMode.MarkdownV2);
     }
 
     public void SendMessage(string message) => TelegramBot.Client.SendTextMessageAsync(Id, message);
