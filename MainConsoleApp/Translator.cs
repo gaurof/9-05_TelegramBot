@@ -4,11 +4,13 @@
 namespace MainConsoleApp;
 public static class Translator
 {
-    private static SemaphoreSlim semaphore = new(1, 1);
     private static async Task<string> TranslateTextAsync(string input, string targetLanguage)
     {
+        if (targetLanguage.ToLower() == "en")
+            return input;
         if (string.IsNullOrWhiteSpace(input))
             return "";
+        
         string url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={targetLanguage}&dt=t&q={Uri.EscapeDataString(input)}";
 
         using (HttpClient httpClient = new HttpClient())
@@ -16,7 +18,6 @@ public static class Translator
             HttpResponseMessage response = await httpClient.GetAsync(url);
             string result = await response.Content.ReadAsStringAsync();
 
-            // The result is a nested array, we need to parse it.
             JArray jsonResponse = JArray.Parse(result);
             string translatedText = jsonResponse[0]![0]![0]!.ToString();
 
@@ -35,4 +36,5 @@ public static class Translator
 
         return output;
     }
+
 }

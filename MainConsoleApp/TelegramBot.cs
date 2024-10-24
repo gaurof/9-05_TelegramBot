@@ -7,6 +7,7 @@ namespace MainConsoleApp;
 public class TelegramBot
 {
     public static TelegramBotClient Client = new("7684584581:AAH3GSHb5Vray3dv6pPl6Qtp4CyCsw3VDvI");
+    //Please don't take my API key, I'm just testing this bot anyway
 
     public static async Task HandleUpdateAsync(ITelegramBotClient client, Update update, CancellationToken cancellationToken)
     {
@@ -26,12 +27,22 @@ public class TelegramBot
         {
             currentUser.Messages?.Add(update.Message.Text);
 
-            if (update.Message.Text == "/start")
+            if (update.Message.Text.ToLower() == "/start")
             {
                 await currentUser.CurrentGame.StartAsync();
-                await currentUser.SendGameMessageAsync(await currentUser.CurrentGame.GetTextAsync(false));
+
+
+                var messageToSend = await currentUser.CurrentGame.GetTextAsync(false);
+                messageToSend = await Translator.TranslateAsync(messageToSend, currentUser.PreferredLanguage[..2]);
+                await currentUser.SendGameMessageAsync(messageToSend);
                 return;
             }
+
+            if (update.Message.Text.ToLower().StartsWith("/language ")) 
+            {
+                
+            }
+
             if (currentUser.CurrentGame is not null)
             {
                 await currentUser.CurrentGame.EnterCommandAsync(update.Message.Text!);

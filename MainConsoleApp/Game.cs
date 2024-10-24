@@ -28,7 +28,7 @@ public class Game
     {
         string pageString = "";
         string timeLocationString = "";
-        WaitForPageLoad();
+        await Task.Run(() => WaitForPageLoad());
         var textBox = firefoxDriver!.FindElements(By.CssSelector("span, br"));
         foreach (var item in textBox)
         {
@@ -61,11 +61,6 @@ public class Game
             pageString = RemoveUserMessageOnPage(pageString);
         pageString = timeLocationString + pageString;
         lastMessageLength = tempLastMessageLength;
-
-        pageString = await Translator.TranslateAsync(pageString, "os");
-
-        Console.WriteLine(pageString);
-
         return pageString;
     }
     public async Task RestartAsync()
@@ -116,13 +111,8 @@ public class Game
         for (int i = 0; i < input.Length; i++)
         {
             if (input[i] == '\n')
-            {
-                Console.WriteLine(input);
-                Console.WriteLine(input.Remove(0, i));
                 return input.Remove(0, i);
-            }
         }
-
         return input;
     }
 }
