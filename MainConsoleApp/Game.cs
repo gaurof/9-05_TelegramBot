@@ -24,10 +24,11 @@ public class Game
         input.SendKeys(command);
         input.Submit();
     }
-    public string GetText(bool wasCommandEnteredBefore)
+    public async Task<string> GetTextAsync(bool wasCommandEnteredBefore)
     {
         string pageString = "";
         string timeLocationString = "";
+        WaitForPageLoad();
         var textBox = firefoxDriver!.FindElements(By.CssSelector("span, br"));
         foreach (var item in textBox)
         {
@@ -61,8 +62,10 @@ public class Game
         pageString = timeLocationString + pageString;
         lastMessageLength = tempLastMessageLength;
 
-        pageString = Translator.TranslateAsync(pageString, "os").Result;
+        pageString = await Translator.TranslateAsync(pageString, "os");
+
         Console.WriteLine(pageString);
+
         return pageString;
     }
     public async Task RestartAsync()

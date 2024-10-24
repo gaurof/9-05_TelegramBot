@@ -25,11 +25,13 @@ public static class Translator
     }
     public static async Task<string> TranslateAsync(string input, string targetLanguage)
     {
-        var inputStrings = input.Split(',');
+        var inputStrings = input.Split('\n');
         var output = "";
 
         foreach (var inputString in inputStrings)
+        {
             output += await TranslateTextAsync(inputString, targetLanguage) + "\n";
+        }
 
         return output;
     }

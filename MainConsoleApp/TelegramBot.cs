@@ -29,13 +29,13 @@ public class TelegramBot
             if (update.Message.Text == "/start")
             {
                 await currentUser.CurrentGame.StartAsync();
-                await currentUser.SendGameMessageAsync(currentUser.CurrentGame.GetText(false));
+                await currentUser.SendGameMessageAsync(await currentUser.CurrentGame.GetTextAsync(false));
                 return;
             }
             if (currentUser.CurrentGame is not null)
             {
                 await currentUser.CurrentGame.EnterCommandAsync(update.Message.Text!);
-                await currentUser.SendGameMessageAsync(currentUser.CurrentGame!.GetText(true));
+                await currentUser.SendGameMessageAsync(await currentUser.CurrentGame!.GetTextAsync(true));
             }
         }
         return;
