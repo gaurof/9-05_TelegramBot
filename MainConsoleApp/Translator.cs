@@ -1,15 +1,16 @@
 ﻿using Newtonsoft.Json.Linq;
+using Serilog;
 
 
 namespace MainConsoleApp;
 public static class Translator
 {
-    private static SemaphoreSlim semaphore = new(1, 1);
-    private static async Task<string> TranslateTextAsync(string input, string targetLanguage)
+    private static async Task<string> TranslateTextAsync(string input, string targetLanguageCode)
     {
         if (string.IsNullOrWhiteSpace(input))
-            return "";
-        string url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={targetLanguage}&dt=t&q={Uri.EscapeDataString(input)}";
+            return input;
+
+        string url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={targetLanguageCode}&dt=t&q={Uri.EscapeDataString(input)}";
 
         using (HttpClient httpClient = new HttpClient())
         {
@@ -23,15 +24,32 @@ public static class Translator
             return translatedText;
         }
     }
+
+
     public static async Task<string> TranslateAsync(string input, string targetLanguage)
     {
         var inputStrings = input.Split('\n');
         var output = "";
-
+        
         foreach (var inputString in inputStrings)
         {
-            output += await TranslateTextAsync(inputString, targetLanguage) + "\n";
+            output += await TranslateTextAsync(inputString, targetLanguage[..2].ToLower()) + "\n";
         }
+        Log.Information($"Translated to {targetLanguage}");
+
+        return output;
+    }public static async Task<string> TranslateGameAsync(string input, string targetLanguage)
+    {
+        if (targetLanguage[..2] == "en")
+            return input;
+        var inputStrings = input.Split('\n');
+        var output = "";
+        
+        foreach (var inputString in inputStrings)
+        {
+            output += await TranslateTextAsync(inputString, targetLanguage[..2].ToLower()) + "\n";
+        }
+        Log.Information($"Translated to {targetLanguage}");
 
         return output;
     }

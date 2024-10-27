@@ -1,35 +1,34 @@
 ﻿using Newtonsoft.Json;
+using Telegram.Bot.Types;
+using System.IO;
 
 namespace MainConsoleApp;
 
 static class Storage
 {
     public static List<User>? Users = new();
+    public static string MainMenuString = "Welcome to the text game *9:05*🕘 made by *Adam Cadre*\nPlease chose one of the buttons below to proceed";
 
-    public static void SaveData()
-    {
-        string usersJsonString = JsonConvert.SerializeObject(Users);
-        File.WriteAllText("users.json", usersJsonString);
-    }
-    public static void LoadData()
-    {
-        if (File.Exists("users.json"))
-        {
-            Users = JsonConvert.DeserializeObject<List<User>>(File.ReadAllText("users.json"));
-        }
-    }
+
+
     public static User? GetUserByID(long userID)
     {
-        if(Users?.Count == 0)
+        if (Users is null || Users.Count == 0)
             return null;
 
-        foreach (var user in Users!)
+        return Users.FirstOrDefault(u => u.Id == userID);
+    }
+
+    internal static User GetOrAddUser(Telegram.Bot.Types.User? user)
+    {
+        User? currentUser = GetUserByID(user!.Id);
+
+        if (currentUser is null)
         {
-            if (user.Id == userID)
-            {
-                return user;
-            }
+            currentUser = new User(user.Id, user.Username ?? "NoUsername", user.FirstName ?? "NoFirstName");
+            Storage.Users?.Add(currentUser);
         }
-        return null;
+
+        return currentUser;
     }
 }

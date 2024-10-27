@@ -9,11 +9,7 @@ public class Game
     private FirefoxDriver? firefoxDriver;
     private int lastMessageLength = 0;
 
-    public Game()
-    {
-        firefoxDriver = new();
-        firefoxDriver.Navigate().GoToUrl("https://adamcadre.ac/if/905.html");
-    }
+    public bool IsActive = false;
     public async Task EnterCommandAsync(string command)
     {
         WaitForPageLoad();
@@ -24,7 +20,7 @@ public class Game
         input.SendKeys(command);
         input.Submit();
     }
-    public async Task<string> GetTextAsync(bool wasCommandEnteredBefore)
+    public async Task<string> GetTextAsync(bool wasCommandEnteredBefore, string userLanguage)
     {
         string pageString = "";
         string timeLocationString = "";
@@ -62,7 +58,7 @@ public class Game
         pageString = timeLocationString + pageString;
         lastMessageLength = tempLastMessageLength;
 
-        pageString = await Translator.TranslateAsync(pageString, "os");
+        pageString = await Translator.TranslateGameAsync(pageString, userLanguage);
 
         Console.WriteLine(pageString);
 
@@ -73,6 +69,10 @@ public class Game
         if (firefoxDriver == null)
             await StartAsync();
         await firefoxDriver!.Navigate().RefreshAsync();
+
+        WaitForPageLoad();
+
+        IsActive = true;
     }
     public async Task StartAsync()
     {
@@ -85,6 +85,8 @@ public class Game
         firefoxDriver.Navigate().GoToUrl("https://adamcadre.ac/if/905.html");
 
         WaitForPageLoad();
+
+        IsActive = true;
     }
     private void WaitForPageLoad()
     {
@@ -109,6 +111,8 @@ public class Game
     {
         if (firefoxDriver != null)
             firefoxDriver.Quit();
+
+        IsActive = false;
     }
 
     private static string RemoveUserMessageOnPage(string input)
@@ -123,6 +127,7 @@ public class Game
             }
         }
 
+        input = input[^5..];
         return input;
     }
 }
