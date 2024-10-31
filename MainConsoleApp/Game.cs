@@ -109,8 +109,7 @@ public class Game
     }
     public void Stop()
     {
-        if (firefoxDriver != null)
-            firefoxDriver.Quit();
+        firefoxDriver?.Dispose();
 
         IsActive = false;
     }
@@ -126,8 +125,6 @@ public class Game
                 return input.Remove(0, i);
             }
         }
-
-        input = input[^5..];
         return input;
     }
 }

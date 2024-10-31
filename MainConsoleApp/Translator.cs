@@ -12,17 +12,15 @@ public static class Translator
 
         string url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl={targetLanguageCode}&dt=t&q={Uri.EscapeDataString(input)}";
 
-        using (HttpClient httpClient = new HttpClient())
-        {
-            HttpResponseMessage response = await httpClient.GetAsync(url);
-            string result = await response.Content.ReadAsStringAsync();
+        using HttpClient httpClient = new();
+        HttpResponseMessage response = await httpClient.GetAsync(url);
+        string result = await response.Content.ReadAsStringAsync();
 
-            // The result is a nested array, we need to parse it.
-            JArray jsonResponse = JArray.Parse(result);
-            string translatedText = jsonResponse[0]![0]![0]!.ToString();
+        // The result is a nested array, we need to parse it.
+        JArray jsonResponse = JArray.Parse(result);
+        string translatedText = jsonResponse[0]![0]![0]!.ToString();
 
-            return translatedText;
-        }
+        return translatedText;
     }
 
 

@@ -43,7 +43,8 @@ public class User
             message = message.Replace(character.ToString(), $@"\{character}");
         }
         message = message.Replace("  ", " ");
-        message = message.Remove(message.Length - 2);
+        message = message.Length > 2 ? message.Remove(message.Length - 2) : message;
+
 
         await TryToSendMarkupMessageAsync(message);
     }
@@ -68,14 +69,14 @@ public class User
         {
             new[]
             {
-                InlineKeyboardButton.WithCallbackData("Start Game 🎮", "start_game"),
-                InlineKeyboardButton.WithCallbackData("Choose Language 🔤", "choose_language")
+                InlineKeyboardButton.WithCallbackData(await Translator.TranslateAsync("Start Game 🎮", Language), "start_game"),
+                InlineKeyboardButton.WithCallbackData(await Translator.TranslateAsync("Choose Language 🔤", Language), "choose_language")
             }
         });
 
         return await TelegramBot.Client.SendTextMessageAsync(
             chatId: Id,
-            text: Storage.MainMenuString,
+            text: await Translator.TranslateAsync(Storage.MainMenuString, Language),
             replyMarkup: replyMarkup,
             parseMode: ParseMode.MarkdownV2
         );
